@@ -1,0 +1,10 @@
+h2 Tasks
+form#delete_form
+  table.table.table-condensed.table-responsive
+    thead
+      tr
+        th Название задачи
+    tbody
+      - @tasks.each do |task|
+        tr id="#{task.id}"
+          td #{task.name}
