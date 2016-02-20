@@ -43,6 +43,7 @@ namespace '/api/v1' do
     @task = Task.new(name: params['name'])
     # halt 201, {'Location' => "/messages/#{message.id}"}, ''
     if @task.save
+      status 201
       json @task
     else
       status 400
