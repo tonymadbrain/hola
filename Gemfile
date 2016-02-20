@@ -17,5 +17,5 @@ end
 group :test do
   gem 'rspec'
   gem 'database_cleaner'
-  gem 'shoulda-matchers', github: 'thoughtbot/shoulda-matchers'
+  gem 'shoulda'
 end
