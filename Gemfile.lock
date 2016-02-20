@@ -1,3 +1,10 @@
+GIT
+  remote: git://github.com/thoughtbot/shoulda-matchers.git
+  revision: 343d5ed407681a243c29306d5197c42cc459334a
+  specs:
+    shoulda-matchers (3.1.1)
+      activesupport (>= 4.0.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -58,10 +65,6 @@ GEM
       tilt (>= 1.3, < 3)
     sinatra-namespace (1.0)
       sinatra-contrib
-    slim (3.0.6)
-      temple (~> 0.7.3)
-      tilt (>= 1.3.3, < 2.1)
-    temple (0.7.6)
     thread_safe (0.3.5)
     tilt (2.0.2)
     tzinfo (1.2.2)
@@ -75,11 +78,11 @@ DEPENDENCIES
   database_cleaner
   pg
   rspec
+  shoulda-matchers!
   sinatra
   sinatra-activerecord
   sinatra-contrib
   sinatra-namespace
-  slim
 
 BUNDLED WITH
    1.11.2

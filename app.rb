@@ -36,7 +36,6 @@ get "/" do
 end
 
 get "/new" do
-  slim :new, layout: :layout
 end
 
 namespace '/api/v1' do
@@ -69,7 +68,6 @@ end
 
 get "/task/:id" do
   if @task = Task.find_by_id(params[:id])
-    slim :task, layout: :layout
   else
     return 404
   end
