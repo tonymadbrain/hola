@@ -2,7 +2,7 @@ require File.expand_path '../spec_helper.rb', __FILE__
 
 describe "Tasks API" do
   describe 'GET /tasks' do
-    context 'when have entitys' do
+    context 'when have tasks' do
       before do
         Task.create(name:'Task 1')
         Task.create(name:'Task 2')
@@ -21,7 +21,7 @@ describe "Tasks API" do
       end
     end
 
-    context 'when have no entitys' do
+    context 'when have no tasks' do
       before do
         get '/api/v1/tasks'
       end
@@ -38,13 +38,37 @@ describe "Tasks API" do
   end
 
   describe 'POST /tasks' do
-    it 'change count of tasks in DB' do
-      expect { post '/api/v1/tasks', { name: "New task" } }.to change(Task, :count).by(1)
+    context 'valid task' do
+      it 'change count of tasks in database' do
+        expect { post '/api/v1/tasks', { name: "New task" } }.to change(Task, :count).by(1)
+      end
+
+      it 'create new task in database' do
+        post '/api/v1/tasks', { name: "New task 2" }
+        expect(Task.first.name).to eq('New task 2')
+      end
+
+      it 'respond with 200' do
+        post '/api/v1/tasks', { name: "New task" }
+        expect(last_response).to be_ok
+      end
+
+      it 'return new entity' do
+        post '/api/v1/tasks', { name: "New task" }
+        data = JSON::parse(last_response.body)
+        expect(data['name']).to eq('New task')
+      end
     end
 
-    it 'create right task in DB' do
-      post '/api/v1/tasks', { name: "New task" }
-      expect(Task.first).to eq('New task')
+    context 'invalid task' do
+      it 'not change count of tasks in database' do
+        expect { post '/api/v1/tasks', { name: "" } }.to_not change(Task, :count)
+      end
+
+      it 'respond with 400' do
+        post '/api/v1/tasks', { name: "" }
+        expect(last_response.status).to eq 400
+      end
     end
   end
 end

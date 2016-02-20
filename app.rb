@@ -44,6 +44,16 @@ namespace '/api/v1' do
     @tasks = Task.all
     json @tasks
   end
+
+  post '/tasks' do
+    @task = Task.new(name: params['name'])
+    if @task.save
+      json @task
+    else
+      status 400
+      json body
+    end
+  end
 end
 
 post "/new" do
