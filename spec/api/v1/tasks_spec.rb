@@ -40,21 +40,21 @@ describe "Tasks API" do
   describe 'POST /tasks' do
     context 'valid task' do
       it 'change count of tasks in database' do
-        expect { post '/api/v1/tasks', { name: "New task" } }.to change(Task, :count).by(1)
+        expect { post '/api/v1/tasks', { name: "New task" }.to_json, { 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json' } }.to change(Task, :count).by(1)
       end
 
       it 'create new task in database' do
-        post '/api/v1/tasks', { name: "New task 2" }
+        post '/api/v1/tasks', { name: "New task 2" }.to_json, { 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json' }
         expect(Task.first.name).to eq('New task 2')
       end
 
       it 'respond with 200' do
-        post '/api/v1/tasks', { name: "New task" }
+        post '/api/v1/tasks', { name: "New task" }.to_json, { 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json' }
         expect(last_response).to be_ok
       end
 
       it 'return new entity' do
-        post '/api/v1/tasks', { name: "New task" }
+        post '/api/v1/tasks', { name: "New task" }.to_json, { 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json' }
         data = JSON::parse(last_response.body)
         expect(data['name']).to eq('New task')
       end
@@ -62,11 +62,11 @@ describe "Tasks API" do
 
     context 'invalid task' do
       it 'not change count of tasks in database' do
-        expect { post '/api/v1/tasks', { name: "" } }.to_not change(Task, :count)
+        expect { post '/api/v1/tasks', { name: "" }.to_json, { 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json' } }.to_not change(Task, :count)
       end
 
       it 'respond with 400' do
-        post '/api/v1/tasks', { name: "" }
+        post '/api/v1/tasks', { name: "" }.to_json, { 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json' }
         expect(last_response.status).to eq 400
       end
     end

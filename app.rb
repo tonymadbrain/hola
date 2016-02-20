@@ -3,6 +3,7 @@ require 'sinatra/activerecord'
 require 'sinatra/reloader'
 require 'sinatra/json'
 require 'sinatra/namespace'
+require 'json'
 
 # module JsonExceptions
 
@@ -38,10 +39,9 @@ namespace '/api/v1' do
   end
 
   post '/tasks' do
-    # params = JSON.parse(params[:name], symbolize_names: true)
-    # json params
-    # @task = Task.new(name: params['name'], description: params['description'])
+    params = JSON.parse(request.env["rack.input"].read)
     @task = Task.new(name: params['name'])
+    # halt 201, {'Location' => "/messages/#{message.id}"}, ''
     if @task.save
       json @task
     else
