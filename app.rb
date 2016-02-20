@@ -24,18 +24,11 @@ require 'sinatra/namespace'
 class Task < ActiveRecord::Base
   validates :name, presence: true, length: { maximum: 25 }
   # validates :description, presence: true, length: { maximum: 1400 }
-end
+  after_initialize :init
 
-get "/" do
-  # @tasks = Task.order("created_at DESC")
-  # # @tasks = Task.all
-  # redirect "/new" if @tasks.empty?
-  # json @tasks
-  # # slim :index, layout: :layout
-  status 200
-end
-
-get "/new" do
+  def init
+    self.state  ||= 'new'           #will set the default value only if it's nil
+  end
 end
 
 namespace '/api/v1' do
@@ -45,29 +38,22 @@ namespace '/api/v1' do
   end
 
   post '/tasks' do
+    # params = JSON.parse(params[:name], symbolize_names: true)
+    # json params
+    # @task = Task.new(name: params['name'], description: params['description'])
     @task = Task.new(name: params['name'])
     if @task.save
       json @task
     else
       status 400
-      json body
+      json "Can't create new task"
     end
   end
 end
 
-post "/new" do
-  @task = Task.new(name: params['name'])
-  @task.save!
-  # if @task.save
-  #   json @task
-  # else
-  #   status 400
-  #   # body json @task.error.message
-  # end
-end
-
 get "/task/:id" do
   if @task = Task.find_by_id(params[:id])
+    json @task
   else
     return 404
   end
