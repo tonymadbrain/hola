@@ -24,7 +24,7 @@ require 'json'
 
 class Task < ActiveRecord::Base
   validates :name, presence: true, length: { maximum: 25 }
-  # validates :description, presence: true, length: { maximum: 1400 }
+  validates :description, presence: true, length: { maximum: 1400 }
   after_initialize :init
 
   def init
