@@ -40,7 +40,7 @@ namespace '/api/v1' do
 
   post '/tasks' do
     params = JSON.parse(request.env["rack.input"].read)
-    @task = Task.new(name: params['name'])
+    @task = Task.new(name: params['name'], description: params['description'])
     # halt 201, {'Location' => "/messages/#{message.id}"}, ''
     if @task.save
       status 201
