@@ -50,6 +50,15 @@ namespace '/api/v1' do
       json "Can't create new task"
     end
   end
+
+  put '/tasks' do
+    status 405
+  end
+
+  delete '/tasks' do
+    Task.destroy_all()
+    status 202
+  end
 end
 
 get "/task/:id" do

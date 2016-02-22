@@ -75,4 +75,27 @@ describe "Tasks API" do
       post '/api/v1/tasks', { name: name, description: "desc" }.to_json, { 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json' }
     end
   end
+
+  describe 'PUT /tasks' do
+    it 'return 405 for now' do
+      put '/api/v1/tasks', { name: "New name for task", description: 'new desc' }.to_json, { 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json' }
+      expect(last_response.status).to eq 405
+    end
+  end
+
+  describe 'DELETE /tasks' do
+    before do
+      Task.create(name:'Task 1', description: 'desc')
+      Task.create(name:'Task 2', description: 'desc')
+      delete '/api/v1/tasks'
+    end
+
+    it 'respond with 202' do
+      expect(last_response.status).to eq 202
+    end
+
+    it 'delete all tasks' do
+      expect(Task.count).to eq 0
+    end
+  end
 end
