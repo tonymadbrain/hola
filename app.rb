@@ -23,8 +23,8 @@ require 'json'
 # register JsonExceptions
 
 class Task < ActiveRecord::Base
-  validates :name, presence: true, length: { maximum: 25 }
-  validates :description, presence: true, length: { maximum: 1400 }
+  validates :name, presence: true, length: { maximum: 25, minimum: 5 }
+  validates :description, presence: true, length: { maximum: 1400, minimum: 10 }
   after_initialize :init
 
   def init
