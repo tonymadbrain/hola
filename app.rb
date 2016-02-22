@@ -56,8 +56,11 @@ namespace '/api/v1' do
   end
 
   delete '/tasks' do
-    Task.destroy_all()
-    status 202
+    if Task.destroy_all()
+      status 202
+    else
+      status 400
+    end
   end
 
   get '/tasks/:id' do
@@ -67,6 +70,33 @@ namespace '/api/v1' do
     else
       # return 404
       status 404
+    end
+  end
+
+  post '/tasks/:id' do
+    status 405
+  end
+
+  put '/tasks/:id' do
+    @task = Task.find_by_id(params[:id])
+    return status 404 if @task.nil?
+    params = JSON.parse(request.env["rack.input"].read)
+    @task.update(name: params['name'], description: params['description'])
+    if @task.save
+      status 202
+      json @task
+    else
+      status 400
+    end
+  end
+
+  delete '/tasks/:id' do
+    @task = Task.find_by_id(params[:id])
+    return status 404 if @task.nil?
+    if @task.destroy
+      status 202
+    else
+      status 400
     end
   end
 end
