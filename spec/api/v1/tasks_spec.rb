@@ -4,8 +4,8 @@ describe "Tasks API" do
   describe 'GET /tasks' do
     context 'when have tasks' do
       before do
-        Task.create(name:'Task 1', description: 'desc')
-        Task.create(name:'Task 2', description: 'desc')
+        Task.create(name:'Task 1', description: 'description')
+        Task.create(name:'Task 2', description: 'description')
         get '/api/v1/tasks'
       end
 
@@ -72,21 +72,21 @@ describe "Tasks API" do
     end
 
     def do_request(name)
-      post '/api/v1/tasks', { name: name, description: "desc" }.to_json, { 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json' }
+      post '/api/v1/tasks', { name: name, description: "description" }.to_json, { 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json' }
     end
   end
 
   describe 'PUT /tasks' do
     it 'return 405 for now' do
-      put '/api/v1/tasks', { name: "New name for task", description: 'new desc' }.to_json, { 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json' }
+      put '/api/v1/tasks', { name: "New name for task", description: 'new description' }.to_json, { 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json' }
       expect(last_response.status).to eq 405
     end
   end
 
   describe 'DELETE /tasks' do
     before do
-      Task.create(name:'Task 1', description: 'desc')
-      Task.create(name:'Task 2', description: 'desc')
+      Task.create(name:'Task 1', description: 'description')
+      Task.create(name:'Task 2', description: 'description')
       delete '/api/v1/tasks'
     end
 
@@ -96,6 +96,35 @@ describe "Tasks API" do
 
     it 'delete all tasks' do
       expect(Task.count).to eq 0
+    end
+  end
+
+  describe 'GET /tasks/:id' do
+    context 'when task exist' do
+      before do
+        Task.create(name:'Super task', description: 'Super description')
+        get '/api/v1/tasks/1'
+      end
+
+      it 'respond with 200 ok' do
+        expect(last_response).to be_ok
+      end
+
+      it 'respond with right object' do
+        data = JSON::parse(last_response.body)
+        expect(data['name']).to eq('Super task')
+        expect(data['description']).to eq('Super description')
+      end
+    end
+
+    context 'when task do not exist' do
+      before do
+        get '/api/v1/tasks/999'
+      end
+
+      it 'respond with 404' do
+        expect(last_response.status).to eq 404
+      end
     end
   end
 end

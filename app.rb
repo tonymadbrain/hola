@@ -59,12 +59,14 @@ namespace '/api/v1' do
     Task.destroy_all()
     status 202
   end
-end
 
-get "/task/:id" do
-  if @task = Task.find_by_id(params[:id])
-    json @task
-  else
-    return 404
+  get '/tasks/:id' do
+    # params = JSON.parse(request.env["rack.input"].read)
+    if @task = Task.find_by_id(params[:id])
+      json @task
+    else
+      # return 404
+      status 404
+    end
   end
 end
