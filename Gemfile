@@ -10,7 +10,7 @@ gem 'sinatra-activerecord'
 # gem 'activesupport'
 
 group :development do
-  # gem 'rake'
+  gem 'rake'
   gem 'sinatra-contrib'
 end
 
