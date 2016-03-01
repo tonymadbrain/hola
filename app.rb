@@ -22,6 +22,14 @@ require 'json'
 
 # register JsonExceptions
 
+def json_error(msg, status=500)
+  Rack::Response.new(
+    [{'error': {'status': status, 'message': msg}}.to_json],
+    status,
+    {'Content-type' => 'application/json'}
+  ).finish
+end
+
 class Task < ActiveRecord::Base
   validates :name, presence: true, length: { maximum: 25, minimum: 5 }
   validates :description, presence: true, length: { maximum: 1400, minimum: 10 }
@@ -46,8 +54,7 @@ namespace '/api/v1' do
       status 201
       json @task
     else
-      status 400
-      json "Can't create new task"
+      json_error(@task.errors.full_messages[0], 400)
     end
   end
 
