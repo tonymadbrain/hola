@@ -22,7 +22,7 @@ require 'json'
 
 # register JsonExceptions
 
-def json_error(msg, status)
+def json_error(msg, status=500)
   Rack::Response.new(
     [{'error': {'status': status, 'message': msg}}.to_json],
     status,
