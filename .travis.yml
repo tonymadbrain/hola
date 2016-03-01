@@ -14,7 +14,7 @@ cache: bundler
 #  - RAILS_ENV=test bundle exec rspec spec/
 script:
   - bundle exec rake db:schema:load RACK_ENV=test
-  # - xvfb-run -a bundle exec rspec
+  - xvfb-run -a bundle exec rspec
 before_script:
   - psql -c 'create database hola_api_travis_ci_test;' -U postgres
   - cp config/database.yml.travis config/database.yml
