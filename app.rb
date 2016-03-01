@@ -24,7 +24,7 @@ require 'json'
 
 def json_error(msg, status)
   Rack::Response.new(
-    [{'error' => msg}.to_json],
+    [{'error': {'status': status, 'message': msg}}.to_json],
     status,
     {'Content-type' => 'application/json'}
   ).finish

@@ -71,7 +71,7 @@ describe "Tasks API" do
       end
 
       # need refactor this test in future
-      it 'respond with json error' do
+      it 'respond with json object error' do
         do_request ""
         data = JSON::parse(last_response.body)
         expect(data['error']).to be
