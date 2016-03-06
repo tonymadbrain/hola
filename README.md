@@ -10,6 +10,7 @@ Requirements:
 2. Postgresql 9.4 or higher
 
 Installation:
+
 1. Fork or clone this repo
 2. Create `config/database.yml` (you can use `config/database.yml.sample`)
 3. Run `bundle install`
