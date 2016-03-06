@@ -26,7 +26,7 @@ def json_error(msg, status=500)
   Rack::Response.new(
     [{'error': {'status': status, 'message': msg}}.to_json],
     status,
-    {'Content-type' => 'application/json'}
+    {'Content-type': 'application/json'}
   ).finish
 end
 
@@ -49,7 +49,6 @@ namespace '/api/v1' do
   post '/tasks' do
     params = JSON.parse(request.env["rack.input"].read)
     @task = Task.new(name: params['name'], description: params['description'])
-    # halt 201, {'Location' => "/messages/#{message.id}"}, ''
     if @task.save
       status 201
       json @task
