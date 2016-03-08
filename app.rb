@@ -26,7 +26,7 @@ def json_error(msg, status=500)
   Rack::Response.new(
     [{'error': {'status': status, 'message': msg}}.to_json],
     status,
-    {'Content-type': 'application/json'}
+    {'Content-type' => 'application/json'}
   ).finish
 end
 
@@ -74,8 +74,8 @@ namespace '/api/v1' do
     if @task = Task.find_by_id(params[:id])
       json @task
     else
-      # return 404
-      status 404
+      # status 404
+      json_error("Not found", 404)
     end
   end
 
@@ -92,7 +92,7 @@ namespace '/api/v1' do
       status 202
       json @task
     else
-      status 400
+      json_error(@task.errors.full_messages[0], 400)
     end
   end
 
@@ -105,4 +105,8 @@ namespace '/api/v1' do
       status 400
     end
   end
+end
+
+not_found do
+  json_error("Doesn't know this ditty", 404)
 end
