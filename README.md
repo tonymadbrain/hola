@@ -24,3 +24,7 @@ Just run `bundle exec rspec spec/`
 ## Application
 
 Just run `ruby app.rb`
+
+## Documentation
+
+You can look at documentation with route `/doc`
