@@ -6,7 +6,7 @@ gem 'sinatra-namespace'
 gem 'pg'
 gem 'activerecord'
 gem 'sinatra-activerecord'
-
+gem 'sinatra-docdsl'
 # gem 'activesupport'
 
 group :development do
