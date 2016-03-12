@@ -9,6 +9,10 @@ describe "Tasks API" do
         get '/api/v1/tasks'
       end
 
+      it 'provide header X-Total-Count' do
+        expect(last_response.headers['X-Total-Count']).to eq("#{Task.count}")
+      end
+
       it 'respond with 200 ok' do
         expect(last_response).to be_ok
       end
@@ -33,6 +37,42 @@ describe "Tasks API" do
       it 'return empty array' do
         data = JSON::parse(last_response.body)
         expect(data.size).to eq(0)
+      end
+    end
+
+    context 'limit and offset params' do
+      before do
+        1...5.times { |i| Task.create(name:"Task #{i+1}", description: 'description') }
+      end
+
+      it 'return 3 when limit 3 and tasks count 5' do
+        get '/api/v1/tasks', limit: 3
+
+        data = JSON::parse(last_response.body)
+        expect(data.size).to eq(3)
+      end
+
+      it 'return task with id 5 when offset 4 and limit 1' do
+        get '/api/v1/tasks', limit: 1, offset: 4
+
+        data = JSON::parse(last_response.body)
+        expect(data.size).to eq(1)
+        expect(data[0]['id']).to eq(5)
+      end
+
+      it 'respond with error when limit < 0' do
+        get '/api/v1/tasks', limit: -5
+        expect(last_response.status).to eq 400
+      end
+
+      it 'respond with error when offset < 0' do
+        get '/api/v1/tasks', offset: -5
+        expect(last_response.status).to eq 400
+      end
+
+      it 'respond with error when limit > 100' do
+        get '/api/v1/tasks', limit: 101
+        expect(last_response.status).to eq 400
       end
     end
   end
