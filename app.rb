@@ -40,7 +40,6 @@ namespace '/api/v1' do
   documentation "Respond with list of existed tasks" do
     param :limit, "limit of tasks for response, default is 20, max is 100"
     param :offset, "offset for tasks, default is 0"
-    header 'X-Total-Count', "provided header with count of tasks"
     response "", {"id":1,
       "name":"MyTask",
       "description":"some useful description",
