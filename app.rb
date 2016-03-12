@@ -25,35 +25,13 @@ require 'docdsl'
 
 register Sinatra::DocDsl
 
-# specify some meta data for your documentation page (optional)
+# some meta data for documentation page (optional)
 page do
   title "Hola API docs"
-  header ""
   introduction "REST API for simple taskmanager Hola"
-  # useful if your sinatra app lives under some context path other than /.
-  # Causes the paths in the documentation to be prefixed with
-  # this. Defaults to empty
-  # url_prefix "/my/application/path"
-  footer "# End of API docs
-  [Github](https://github.com/tonymadbrain/hola_api)"
-  # configuring the renderer is optional, and in this case just uses the default
+  footer "[Github](https://github.com/tonymadbrain/hola_api)"
   configure_renderer do
-    # if you use the provided render_md, you can use markdown in your documentation.
-    #This uses a simple markdown template to render an html page using kramdown
     self.render_md
-
-    # if you want to get at the raw markdown
-    # self.md
-
-    # we have a json renderer as well, uncomment to enable
-    # self.json
-
-    # finally, we have a simple html template that does not rely on markdown
-    # self.html
-
-    # Of course, you can easily write your own renderer. It is executed on
-    # the @page_doc object and you have full access to the attributes in there.
-    # be sure to return a valid sinatra response, e.g. [200,'hello wrld']
   end
 end
 
