@@ -6,23 +6,6 @@ require 'sinatra/namespace'
 require 'json'
 require 'docdsl'
 
-# module JsonExceptions
-
-#   def self.registered(app)
-#     app.set show_exceptions: false
-
-#     app.error { |err|
-#       Rack::Response.new(
-#         [{'error' => err.message}.to_json],
-#         500,
-#         {'Content-type' => 'application/json'}
-#       ).finish
-#     }
-#   end
-# end
-
-# register JsonExceptions
-
 register Sinatra::DocDsl
 
 # some meta data for documentation page (optional)
@@ -35,7 +18,7 @@ page do
   end
 end
 
-def json_error(msg, status=500)
+def json_error(msg="Problem with backend", status=500)
   Rack::Response.new(
     [{'error': {'status': status, 'message': msg}}.to_json],
     status,
@@ -55,6 +38,9 @@ end
 
 namespace '/api/v1' do
   documentation "Respond with list of existed tasks" do
+    param :limit, "limit of tasks for response, default is 20, max is 100"
+    param :offset, "offset for tasks, default is 0"
+    header 'X-Total-Count', "provided header with count of tasks"
     response "", {"id":1,
       "name":"MyTask",
       "description":"some useful description",
@@ -67,8 +53,27 @@ namespace '/api/v1' do
     status 404
   end
   get '/tasks' do
-    @tasks = Task.all
-    json @tasks
+    params[:limit] ||= 20
+    params[:offset] ||= 0
+    params[:limit] = params[:limit].to_i
+    params[:offset] = params[:offset].to_i
+
+    if params[:limit] < 0 or params[:limit] > 100
+      return json_error "Invalid limit", 400
+    end
+
+    if params[:offset] < 0
+      return json_error "Invalid offset", 400
+    end
+
+    if @tasks = Task.limit(params[:limit]).offset(params[:offset])
+      @tasks_sount = Task.count
+      headers['X-Total-Count'] = "#{@tasks_sount}"
+      #need implement header 'Link'
+      json @tasks
+    else
+      json_error
+    end
   end
 
   documentation "Create new task" do
