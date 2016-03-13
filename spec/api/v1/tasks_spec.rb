@@ -45,6 +45,21 @@ describe "Tasks API" do
         1...5.times { |i| Task.create(name:"Task #{i+1}", description: 'description') }
       end
 
+      it 'provide link header when offset 0' do
+        get '/api/v1/tasks', limit: 2, offset: 0
+        expect(last_response.headers['Link']).to eq("<http://example.org/api/v1/tasks?offset=0&limit=2>; rel=\"first\",<http://example.org/api/v1/tasks?offset=3&limit=2>; rel=\"last\",<http://example.org/api/v1/tasks?offset=2&limit=2>; rel=\"next\",")
+      end
+
+      it 'provide link header when offset < limit' do
+        get '/api/v1/tasks', limit: 2, offset: 1
+        expect(last_response.headers['Link']).to eq("<http://example.org/api/v1/tasks?offset=0&limit=2>; rel=\"first\",<http://example.org/api/v1/tasks?offset=3&limit=2>; rel=\"last\",<http://example.org/api/v1/tasks?offset=3&limit=2>; rel=\"next\",<http://example.org/api/v1/tasks?offset=0&limit=1>; rel=\"prev\",")
+      end
+
+      it 'provide link header offset > limit' do
+        get '/api/v1/tasks', limit: 1, offset: 2
+        expect(last_response.headers['Link']).to eq("<http://example.org/api/v1/tasks?offset=0&limit=1>; rel=\"first\",<http://example.org/api/v1/tasks?offset=4&limit=1>; rel=\"last\",<http://example.org/api/v1/tasks?offset=3&limit=1>; rel=\"next\",<http://example.org/api/v1/tasks?offset=1&limit=1>; rel=\"prev\",")
+      end
+
       it 'return 3 when limit 3 and tasks count 5' do
         get '/api/v1/tasks', limit: 3
 
