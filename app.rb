@@ -18,7 +18,7 @@ page do
   end
 end
 
-def json_error(msg="Problem with backend", status=500)
+def json_error(msg="Internal Server Error", status=500)
   Rack::Response.new(
     [{'error': {'status': status, 'message': msg}}.to_json],
     status,
