@@ -157,7 +157,6 @@ namespace '/api/v1' do
     if @task = Task.find_by_id(params[:id])
       json @task
     else
-      # status 404
       json_error("Not found", 404)
     end
   end
