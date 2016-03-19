@@ -1,6 +1,6 @@
 require File.expand_path '../../../spec_helper.rb', __FILE__
 
-describe "Tasks API" do
+describe 'Tasks API' do
   describe 'GET /tasks' do
     context 'when have tasks' do
       before do

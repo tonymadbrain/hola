@@ -7,7 +7,7 @@ gem 'pg'
 gem 'activerecord'
 gem 'sinatra-activerecord'
 gem 'sinatra-docdsl'
-# gem 'activesupport'
+gem 'bcrypt'
 
 group :development do
   gem 'rake'
