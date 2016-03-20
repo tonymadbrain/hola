@@ -23,6 +23,10 @@ describe 'Users API' do
         expect(data[0]['email']).to eq('user1@hola.api')
         expect(data[1]['email']).to eq('user2@hola.api')
       end
+
+      it 'will send only serialized data' do
+        
+      end
     end
   end
 end

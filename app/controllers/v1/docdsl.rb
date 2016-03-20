@@ -1,0 +1,1 @@
+doc_endpoint "/doc"

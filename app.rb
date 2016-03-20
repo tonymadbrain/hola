@@ -12,4 +12,4 @@ register Sinatra::DocDsl
 Dir.glob('./app/{helpers,models}/*.rb').each { |file| require file }
 
 # pull in routes
-Dir.glob('./app/controllers/v1.rb').each { |file| require file }
+Dir.glob('./app/controllers/v1/*.rb').each { |file| require file }
