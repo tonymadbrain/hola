@@ -12,10 +12,12 @@ gem 'bcrypt'
 group :development do
   gem 'rake'
   gem 'sinatra-contrib'
+  # gem 'json_spec'
 end
 
 group :test do
   gem 'rspec'
   gem 'database_cleaner'
   gem 'shoulda'
+  gem 'json_spec'
 end

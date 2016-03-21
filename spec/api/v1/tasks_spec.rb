@@ -5,7 +5,6 @@ describe 'Tasks API' do
     context 'when have tasks' do
       before do
         Task.create(name:'Task 1', description: 'description')
-        Task.create(name:'Task 2', description: 'description')
         get '/api/v1/tasks'
       end
 
@@ -19,9 +18,8 @@ describe 'Tasks API' do
 
       it 'respond with right objects' do
         data = JSON::parse(last_response.body)
-        expect(data.size).to eq(2)
+        expect(data.size).to eq(Task.count)
         expect(data[0]['name']).to eq('Task 1')
-        expect(data[1]['name']).to eq('Task 2')
       end
     end
 

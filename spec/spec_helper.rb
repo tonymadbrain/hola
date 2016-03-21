@@ -3,6 +3,7 @@ require 'rack/test'
 require 'rspec'
 require 'database_cleaner'
 require 'shoulda/matchers'
+require 'json_spec'
 
 set :environment, :test
 
