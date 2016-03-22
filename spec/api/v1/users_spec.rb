@@ -21,14 +21,8 @@ describe 'Users API' do
         expect(last_response).to be_ok
       end
 
-      it 'respond with right objects' do
-        data = JSON::parse(last_response.body)
-        expect(data.size).to eq(User.count)
-        expect(data[0]['email']).to eq('user1@hola.api')
-      end
-
       %w(id email created_at updated_at).each do |attr|
-        it "contains #{ attr }" do
+        it "respond contains #{ attr }" do
           data = JSON::parse(last_response.body)
           expect(data[0]["#{attr}"].to_json).to eq(@user.send(attr.to_sym).to_json)
         end
@@ -37,7 +31,7 @@ describe 'Users API' do
       %w(password_digest admin).each do |attr|
         it "does not contain #{ attr }" do
           data = JSON::parse(last_response.body)
-          expect(data[0]["#{attr}"].to_json).to eq("null")
+          expect(data[0]).to_not have_key("#{attr}")
         end
       end
     end
