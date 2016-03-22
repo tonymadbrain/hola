@@ -131,13 +131,17 @@ describe 'Tasks API' do
     end
 
     def do_request(name)
-      post '/api/v1/tasks', { name: name, description: "description" }.to_json, { 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json' }
+      post '/api/v1/tasks',
+        { name: name, description: "description" }.to_json,
+        { 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json' }
     end
   end
 
   describe 'PUT /tasks' do
     it 'return 405 for now' do
-      put '/api/v1/tasks', { name: "New name for task", description: 'new description' }.to_json, { 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json' }
+      put '/api/v1/tasks',
+        { name: "New name for task", description: 'new description' }.to_json,
+        { 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json' }
       expect(last_response.status).to eq 405
     end
   end
@@ -201,8 +205,13 @@ describe 'Tasks API' do
   describe 'PUT /tasks/:id' do
     context 'with valid data' do
       before do
-        Task.create(name:'Task for changes', description: 'Description for changes')
-        put '/api/v1/tasks/1', { name: "New name for task", description: 'New description' }.to_json, { 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json' }
+        Task.create(
+          name:'Task for changes',
+          description: 'Description for changes'
+        )
+        put '/api/v1/tasks/1',
+          { name: "New name for task", description: 'New description' }.to_json,
+          { 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json' }
       end
 
       it 'respond with 202' do
@@ -218,15 +227,22 @@ describe 'Tasks API' do
 
     context 'with not valid data' do
       it 'respond with 400' do
-        Task.create(name:'Task for changes', description: 'Description for changes')
-        put '/api/v1/tasks/1', { name: "123", description: '456' }.to_json, { 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json' }
+        Task.create(
+          name:'Task for changes',
+          description: 'Description for changes'
+        )
+        put '/api/v1/tasks/1',
+          { name: "123", description: '456' }.to_json,
+          { 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json' }
         expect(last_response.status).to eq 400
       end
     end
 
     context 'if task does not exist' do
       it 'respond with 404' do
-        put '/api/v1/tasks/1', { name: "123", description: '456' }.to_json, { 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json' }
+        put '/api/v1/tasks/1',
+          { name: "123", description: '456' }.to_json,
+          { 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json' }
         expect(last_response.status).to eq 404
       end
     end
@@ -235,7 +251,10 @@ describe 'Tasks API' do
   describe 'DELETE /tasks/:id' do
     context 'when task exist' do
       before do
-        Task.create(name:'Task for deleting', description: 'Description for task deleting')
+        Task.create(
+          name:'Task for deleting',
+          description: 'Description for task deleting'
+        )
       end
 
       it 'delete task form database' do
@@ -256,7 +275,9 @@ describe 'Tasks API' do
     end
 
     def do_request
-      delete '/api/v1/tasks/1', {}.to_json, { 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json' }
+      delete '/api/v1/tasks/1',
+        {}.to_json,
+        { 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json' }
     end
   end
 end

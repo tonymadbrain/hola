@@ -101,5 +101,52 @@ describe 'Users API' do
         expect(last_response.status).to eq 400
       end
     end
+
+    describe 'POST /users' do
+      context 'valid user' do
+        it 'change count of users in database' do
+          expect { do_request "new_user@hola.api" }.to change(User, :count).by(1)
+        end
+
+        it 'create new user in database' do
+          do_request "new_user_2@hola.api"
+          expect(User.first.email).to eq('new_user_2@hola.api')
+        end
+
+        it 'respond with 201' do
+          do_request "new_user@hola.api"
+          expect(last_response.status).to eq 201
+        end
+
+        it 'return new entity' do
+          do_request "new_user@hola.api"
+          data = JSON::parse(last_response.body)
+          expect(data['email']).to eq('new_user@hola.api')
+        end
+      end
+
+      context 'invalid task' do
+        it 'not change count of users in database' do
+          expect { do_request "" }.to_not change(User, :count)
+        end
+
+        it 'respond with 400' do
+          do_request ""
+          expect(last_response.status).to eq 400
+        end
+
+        it 'respond with json object error' do
+          do_request ""
+          data = JSON::parse(last_response.body)
+          expect(data).to have_key('error')
+        end
+      end
+
+      def do_request(email)
+        post '/api/v1/users',
+          { email: email, password: "123456" }.to_json,
+          { 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json' }
+      end
+    end
   end
 end
