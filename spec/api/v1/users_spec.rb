@@ -13,8 +13,6 @@ describe 'Users API' do
         get '/api/v1/users'
       end
 
-      # subject { @user }
-
       it 'provide header X-Total-Count' do
         expect(last_response.headers['X-Total-Count']).to eq("#{User.count}")
       end
@@ -39,7 +37,6 @@ describe 'Users API' do
       %w(password_digest admin).each do |attr|
         it "does not contain #{ attr }" do
           data = JSON::parse(last_response.body)
-          # expect(last_response.body).to_not have_json_path(attr)
           expect(data[0]["#{attr}"].to_json).to eq("null")
         end
       end
