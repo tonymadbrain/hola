@@ -123,11 +123,10 @@ describe 'Tasks API' do
         expect(last_response.status).to eq 400
       end
 
-      # need refactor this test in future
       it 'respond with json object error' do
         do_request ""
         data = JSON::parse(last_response.body)
-        expect(data['error']).to be
+        expect(data).to have_key('error')
       end
     end
 
