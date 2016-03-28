@@ -9,9 +9,9 @@ gem 'activerecord'
 gem 'sinatra-activerecord'
 gem 'sinatra-docdsl'
 gem 'bcrypt'
+gem 'rake'
 
 group :development do
-  gem 'rake'
   gem 'sinatra-contrib'
   # gem 'json_spec'
 end
