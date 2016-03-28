@@ -21,7 +21,7 @@ describe 'Users API' do
         expect(last_response).to be_ok
       end
 
-      %w(id email created_at updated_at).each do |attr|
+      %w(id email name created_at updated_at).each do |attr|
         it "respond contains #{ attr }" do
           data = JSON::parse(last_response.body)
           expect(data[0]["#{attr}"].to_json).to eq(@user.send(attr.to_sym).to_json)

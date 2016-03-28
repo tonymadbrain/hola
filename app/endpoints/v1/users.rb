@@ -27,7 +27,7 @@ namespace '/api/v1' do
       return json_error "Invalid offset", 400
     end
 
-    if @users = User.limit(limit).offset(offset)
+    if @users = User.limit(limit).offset(offset).select("id", "email", "name", "created_at", "updated_at")
       users_count = User.count
       headers['X-Total-Count'] = "#{users_count}"
       link = ""
