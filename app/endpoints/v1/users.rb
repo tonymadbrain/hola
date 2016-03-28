@@ -55,4 +55,12 @@ namespace '/api/v1' do
       json_error
     end
   end
+
+  post '/users' do
+    if request.secure?
+      json 'URRA!'
+    else
+      status 405
+    end
+  end
 end
