@@ -10,7 +10,7 @@ namespace '/api/v1' do
       "created_at":"2016-03-11T12:28:01.380Z",
       "updated_at":"2016-03-11T12:28:01.380Z"
     }
-    status 200,"If all work properly"
+    status 200
     status 400
     status 404
   end
