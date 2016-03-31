@@ -56,11 +56,35 @@ namespace '/api/v1' do
     end
   end
 
+  documentation "Create new user" do
+    payload "Required fields email and password, field name is optional",
+      {"name":"Andreyka Filonoff", "email":"nagibator2000@mail.ru", "password":"01042000"}
+    response "Response with created object", {
+      "id":2001,
+      "name":"",
+      "email":"nagibator2000@mail.ru",
+      "created_at":"2016-03-11T12:28:01.380Z",
+      "updated_at":"2016-03-11T12:28:01.380Z"
+    }
+    status 201
+    status 400
+    status 404
+    status 405
+  end
   post '/users' do
-    if request.secure?
-      json 'URRA!'
+    return status 405 unless request.secure?
+    params = JSON.parse(request.env["rack.input"].read)
+    @user = User.new(name: params['name'], password: params['password'])
+    if @task.save
+      status 201
+      json @task
     else
-      status 405
+      json_error(@task.errors.full_messages[0], 400)
     end
+    # if request.secure?
+    #   json 'URRA!'
+    # else
+    #   status 405
+    # end
   end
 end

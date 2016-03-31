@@ -3,7 +3,7 @@ page do
   title "Hola API docs"
   introduction "REST API for simple taskmanager Hola.
 
-Meaning of used HTTP status codes:
+Meaning of used HTTP status & error codes:
 
 * 200 OK - Success!
 * 201 Created - Success!
