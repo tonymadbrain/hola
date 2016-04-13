@@ -72,8 +72,8 @@ namespace '/api/v1' do
     status 404
   end
   post '/tasks' do
-    params = JSON.parse(request.env["rack.input"].read)
-    @task = Task.new(name: params['name'], description: params['description'])
+    params = JSON.parse(request.body.read).symbolize_keys
+    @task = Task.new(params)
     if @task.save
       status 201
       json @task
