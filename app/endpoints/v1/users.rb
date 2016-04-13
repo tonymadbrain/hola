@@ -72,19 +72,16 @@ namespace '/api/v1' do
     status 405
   end
   post '/users' do
-    return status 405 unless request.secure?
-    params = JSON.parse(request.env["rack.input"].read)
-    @user = User.new(name: params['name'], password: params['password'])
-    if @task.save
-      status 201
-      json @task
-    else
-      json_error(@task.errors.full_messages[0], 400)
+    if settings.production?
+      return status 405 unless request.secure?
     end
-    # if request.secure?
-    #   json 'URRA!'
-    # else
-    #   status 405
-    # end
+    params = JSON.parse(request.body.read).symbolize_keys
+    @user = User.new(params)
+    if @user.save
+      status 201
+      json @user
+    else
+      json_error(@user.errors.full_messages[0], 400)
+    end
   end
 end
