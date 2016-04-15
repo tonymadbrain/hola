@@ -149,4 +149,13 @@ describe 'Users API' do
       end
     end
   end
+
+  describe 'PUT /users' do
+    it 'return 405 for now' do
+      put '/api/v1/users',
+        { email: "new_email@mail.net", password: '123456789' }.to_json,
+        { 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json' }
+      expect(last_response.status).to eq 405
+    end
+  end
 end

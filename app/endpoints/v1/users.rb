@@ -84,4 +84,11 @@ namespace '/api/v1' do
       json_error(@user.errors.full_messages[0], 400)
     end
   end
+
+  documentation "Not allowed to change bach of users for now" do
+    status 405
+  end
+  put '/users' do
+    status 405
+  end
 end
