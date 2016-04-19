@@ -158,4 +158,20 @@ describe 'Users API' do
       expect(last_response.status).to eq 405
     end
   end
+
+  describe 'DELETE /users' do
+    before do
+      User.create(email:'user_for_deletin1@holapi.com', password: '123456789')
+      User.create(email:'user_for_deletin2@holapi.com', password: '123456789')
+      delete '/api/v1/users'
+    end
+
+    it 'respond with 202' do
+      expect(last_response.status).to eq 202
+    end
+
+    it 'delete all users' do
+      expect(User.count).to eq 0
+    end
+  end
 end
