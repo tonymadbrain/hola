@@ -91,4 +91,16 @@ namespace '/api/v1' do
   put '/users' do
     status 405
   end
+
+  documentation "Delete all existed users" do
+    status 202
+    status 400
+  end
+  delete '/users' do
+    if User.destroy_all()
+      status 202
+    else
+      status 400
+    end
+  end
 end
