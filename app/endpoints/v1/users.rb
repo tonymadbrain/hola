@@ -125,4 +125,11 @@ namespace '/api/v1' do
       json_error("Not found", 404)
     end
   end
+
+  documentation "Just nope!" do
+    status 405
+  end
+  post '/users/:id' do
+    status 405
+  end
 end

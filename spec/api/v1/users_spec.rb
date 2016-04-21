@@ -203,17 +203,17 @@ describe 'Users API' do
       end
     end
   end
-  #
-  # describe 'POST /tasks/:id' do
-  #   before do
-  #     Task.create(name:'Super task', description: 'Super description')
-  #     post '/api/v1/tasks/1'
-  #   end
-  #
-  #   it 'respond with 405' do
-  #     expect(last_response.status).to eq 405
-  #   end
-  # end
+
+  describe 'POST /users/:id' do
+    before do
+      # User.create(email:'test_user@holapi.com', password: '123456789', name: 'Super user')
+      post '/api/v1/users/1'
+    end
+
+    it 'respond with 405' do
+      expect(last_response.status).to eq 405
+    end
+  end
   #
   # describe 'PUT /tasks/:id' do
   #   context 'with valid data' do
