@@ -4,7 +4,7 @@ namespace '/api/v1' do
     param :offset, "offset for users, default is 0"
     response "", {
       "id":1,
-      "name":"MyTask",
+      "name":"MyUser",
       "email":"mail@example.org",
       "created_at":"2016-03-11T12:28:01.380Z",
       "updated_at":"2016-03-11T12:28:01.380Z"
@@ -101,6 +101,28 @@ namespace '/api/v1' do
       status 202
     else
       status 400
+    end
+  end
+
+  documentation "Respond with selected user" do
+    param :id, "Numeric id"
+    response "Response with user", {
+      "id":1,
+      "name":"MyUser",
+      "email":"mail@example.org",
+      "created_at":"2016-03-11T12:28:01.380Z",
+      "updated_at":"2016-03-11T12:28:01.380Z"
+    }
+    status 200
+    status 400
+    status 404
+  end
+  get '/users/:id' do
+    # params = JSON.parse(request.env["rack.input"].read)
+    if @user = User.find_by_id(params[:id])
+      json @user
+    else
+      json_error("Not found", 404)
     end
   end
 end
