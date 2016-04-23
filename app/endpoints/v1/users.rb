@@ -118,8 +118,7 @@ namespace '/api/v1' do
     status 404
   end
   get '/users/:id' do
-    # params = JSON.parse(request.env["rack.input"].read)
-    if @user = User.find_by_id(params[:id])
+    if @user = User.where(id: "#{params[:id]}").select("id", "email", "name", "created_at", "updated_at").first
       json @user
     else
       json_error("Not found", 404)
@@ -131,5 +130,41 @@ namespace '/api/v1' do
   end
   post '/users/:id' do
     status 405
+  end
+
+  documentation "Change selected user" do
+    param :id, "numeric id"
+    payload "Password field is required",
+      {"email":"mail@example.org", "password":"password", "name":"MyUser"}
+    response "Only with status 202", {}
+    status 202
+    status 400
+    status 404
+  end
+  put '/users/:id' do
+    @user = User.find_by_id(params[:id])
+    return status 404 if @user.nil?
+    params = JSON.parse(request.body.read).symbolize_keys
+    if @user.update(params)
+      status 202
+    else
+      json_error(@user.errors.full_messages[0], 400)
+    end
+  end
+
+  documentation "Delete selected user" do
+    param :id, "numeric id"
+    status 202
+    status 400
+    status 404
+  end
+  delete '/users/:id' do
+    @user = User.find_by_id(params[:id])
+    return status 404 if @user.nil?
+    if @user.destroy
+      status 202
+    else
+      status 400
+    end
   end
 end
