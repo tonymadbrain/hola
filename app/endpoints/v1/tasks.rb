@@ -10,7 +10,7 @@ namespace '/api/v1' do
       "created_at":"2016-03-11T12:28:01.380Z",
       "updated_at":"2016-03-11T12:28:01.380Z"
     }
-    status 200,"If all work properly"
+    status 200
     status 400
     status 404
   end
@@ -72,8 +72,8 @@ namespace '/api/v1' do
     status 404
   end
   post '/tasks' do
-    params = JSON.parse(request.env["rack.input"].read)
-    @task = Task.new(name: params['name'], description: params['description'])
+    params = JSON.parse(request.body.read).symbolize_keys
+    @task = Task.new(params)
     if @task.save
       status 201
       json @task

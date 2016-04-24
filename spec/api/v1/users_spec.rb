@@ -149,4 +149,167 @@ describe 'Users API' do
       end
     end
   end
+
+  describe 'PUT /users' do
+    it 'return 405 for now' do
+      put '/api/v1/users',
+        { email: "new_email@mail.net", password: '123456789' }.to_json,
+        { 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json' }
+      expect(last_response.status).to eq 405
+    end
+  end
+
+  describe 'DELETE /users' do
+    before do
+      User.create(email:'user_for_deletin1@holapi.com', password: '123456789')
+      User.create(email:'user_for_deletin2@holapi.com', password: '123456789')
+      delete '/api/v1/users'
+    end
+
+    it 'respond with 202' do
+      expect(last_response.status).to eq 202
+    end
+
+    it 'delete all users' do
+      expect(User.count).to eq 0
+    end
+  end
+
+  describe 'GET /users/:id' do
+    context 'when have user' do
+      before do
+        @user = User.new(
+          email:'user1@hola.api',
+          password: 'user1@hola.api',
+          name: "Test User"
+        )
+        @user.save
+        get '/api/v1/users/1'
+      end
+
+      it 'respond with 200 ok' do
+        expect(last_response).to be_ok
+      end
+
+      %w(id email name created_at updated_at).each do |attr|
+        it "respond contains #{ attr }" do
+          data = JSON::parse(last_response.body)
+          expect(data["#{attr}"].to_json).to eq(@user.send(attr.to_sym).to_json)
+        end
+      end
+
+      %w(password_digest admin).each do |attr|
+        it "does not contain #{ attr }" do
+          data = JSON::parse(last_response.body)
+          expect(data).to_not have_key("#{attr}")
+        end
+      end
+    end
+
+    # context 'when user exist' do
+    #   before do
+    #     User.create(email:'test_user@holapi.com', password: '123456789', name: 'Super user')
+    #     get '/api/v1/users/1'
+    #   end
+    #
+    #   it 'respond with 200 ok' do
+    #     expect(last_response).to be_ok
+    #   end
+    #
+    #   it 'respond with right object' do
+    #     data = JSON::parse(last_response.body)
+    #     expect(data['email']).to eq('test_user@holapi.com')
+    #     expect(data['name']).to eq('Super user')
+    #   end
+    # end
+
+    context 'when user do not exist' do
+      before do
+        get '/api/v1/users/999'
+      end
+
+      it 'respond with 404' do
+        expect(last_response.status).to eq 404
+      end
+    end
+  end
+
+  describe 'POST /users/:id' do
+    before do
+      post '/api/v1/users/1'
+    end
+
+    it 'respond with 405' do
+      expect(last_response.status).to eq 405
+    end
+  end
+
+  describe 'PUT /users/:id' do
+    context 'with valid data' do
+      before do
+        User.create(email:'test_user@holapi.com', password: '123456789')
+        put '/api/v1/users/1',
+          { email: "super_user@holapi.com", password: "123456789" }.to_json,
+          { 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json' }
+      end
+
+      it 'respond with 202' do
+        expect(last_response.status).to eq 202
+      end
+
+      it 'change user in database' do
+        expect(User.find_by_id(1).email).to eq 'super_user@holapi.com'
+      end
+    end
+
+    context 'with not valid data' do
+      before do
+        User.create(email:'test_user2@holapi.com', password: '123456789')
+        put '/api/v1/users/1',
+          { email: "super_user@holapi.com", password: '1' }.to_json,
+          { 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json' }
+      end
+
+      it 'respond with 400' do
+        expect(last_response.status).to eq 400
+      end
+
+      it 'not change user in databse' do
+        expect(User.find_by_id(1).email).to eq 'test_user2@holapi.com'
+      end
+    end
+
+    context 'if user does not exist' do
+      it 'respond with 404' do
+        put '/api/v1/users/1',
+          { email: "123", password: '456' }.to_json,
+          { 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json' }
+        expect(last_response.status).to eq 404
+      end
+    end
+  end
+
+  describe 'DELETE /users/:id' do
+    context 'when user exist' do
+      before do
+        User.create(email:'test_user@holapi.com', password: '123456789')
+      end
+
+      it 'delete user form database' do
+        expect { delete '/api/v1/users/1' }.to change(User, :count).by(-1)
+      end
+
+      it 'respond with 202' do
+        delete '/api/v1/users/1'
+        expect(last_response.status).to eq 202
+      end
+    end
+
+    context 'when user does not exist' do
+      it 'respond with 404' do
+        delete '/api/v1/users/1'
+        expect(last_response.status).to eq 404
+      end
+    end
+  end
 end
