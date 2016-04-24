@@ -21,4 +21,5 @@ group :test do
   gem 'database_cleaner'
   gem 'shoulda'
   gem 'json_spec'
+  gem 'factory_girl'
 end

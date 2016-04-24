@@ -4,6 +4,7 @@ require 'rspec'
 require 'database_cleaner'
 require 'shoulda/matchers'
 require 'json_spec'
+require 'factory_girl'
 
 set :environment, :test
 
@@ -12,9 +13,12 @@ ActiveRecord::Migration.maintain_test_schema!
 # Disable DEBUG mode in tests
 ActiveRecord::Base.logger = nil unless ENV['LOG'] == true
 
+FactoryGirl.definition_file_paths = [File.expand_path('../factories', __FILE__)]
+FactoryGirl.find_definitions
+
 RSpec.configure do |config|
   # config.include RSpecMixin
-
+  config.include FactoryGirl::Syntax::Methods
   config.include Rack::Test::Methods
 
   # Rails cast tutorial
@@ -34,6 +38,9 @@ RSpec.configure do |config|
     expectations.include_chain_clauses_in_custom_matcher_descriptions = true
   end
 end
+
+# FactoryGirl.definition_file_paths = %w{./factories ./test/factories ./spec/factories}
+# FactoryGirl.find_definitions
 
 def app
   Sinatra::Application

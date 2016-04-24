@@ -2,9 +2,12 @@ require File.expand_path '../../../spec_helper.rb', __FILE__
 
 describe 'Tasks API' do
   describe 'GET /tasks' do
+    let!(:user) { create(:user) }
+
     context 'when have tasks' do
+      let!(:task) { create(:task, user: user) }
+
       before do
-        Task.create(name:'Task 1', description: 'description')
         get '/api/v1/tasks'
       end
 
@@ -19,7 +22,7 @@ describe 'Tasks API' do
       it 'respond with right objects' do
         data = JSON::parse(last_response.body)
         expect(data.size).to eq(Task.count)
-        expect(data[0]['name']).to eq('Task 1')
+        expect(data[0]['name']).to eq(task.name)
       end
     end
 
@@ -39,9 +42,7 @@ describe 'Tasks API' do
     end
 
     context 'limit and offset params' do
-      before do
-        1...5.times { |i| Task.create(name:"Task #{i+1}", description: 'description') }
-      end
+      let!(:task) { create_list(:task, 5, user: user) }
 
       it 'provide link header when offset 0' do
         get '/api/v1/tasks', limit: 2, offset: 0
