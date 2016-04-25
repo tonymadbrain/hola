@@ -3,13 +3,9 @@ require File.expand_path '../../../spec_helper.rb', __FILE__
 describe 'Users API' do
   describe 'GET /users' do
     context 'when have users' do
+      let!(:user) { create :user }
+
       before do
-        @user = User.new(
-          email:'user1@hola.api',
-          password: 'user1@hola.api',
-          name: "Test User"
-        )
-        @user.save
         get '/api/v1/users'
       end
 
@@ -24,7 +20,7 @@ describe 'Users API' do
       %w(id email name created_at updated_at).each do |attr|
         it "respond contains #{ attr }" do
           data = JSON::parse(last_response.body)
-          expect(data[0]["#{attr}"].to_json).to eq(@user.send(attr.to_sym).to_json)
+          expect(data[0]["#{attr}"].to_json).to eq(user.send(attr.to_sym).to_json)
         end
       end
 
@@ -52,9 +48,7 @@ describe 'Users API' do
     end
 
     context 'limit and offset params' do
-      before do
-        1...5.times { |i| User.create(email:"user_#{i+1}@hola.api", password: '123456') }
-      end
+      let!(:users) { create_list(:user, 5) }
 
       it 'provide link header when offset 0' do
         get '/api/v1/users', limit: 2, offset: 0
@@ -160,9 +154,9 @@ describe 'Users API' do
   end
 
   describe 'DELETE /users' do
+    let!(:users) { create_list(:user, 2) }
+
     before do
-      User.create(email:'user_for_deletin1@holapi.com', password: '123456789')
-      User.create(email:'user_for_deletin2@holapi.com', password: '123456789')
       delete '/api/v1/users'
     end
 
@@ -177,13 +171,9 @@ describe 'Users API' do
 
   describe 'GET /users/:id' do
     context 'when have user' do
+      let!(:user) { create :user }
+
       before do
-        @user = User.new(
-          email:'user1@hola.api',
-          password: 'user1@hola.api',
-          name: "Test User"
-        )
-        @user.save
         get '/api/v1/users/1'
       end
 
@@ -194,7 +184,7 @@ describe 'Users API' do
       %w(id email name created_at updated_at).each do |attr|
         it "respond contains #{ attr }" do
           data = JSON::parse(last_response.body)
-          expect(data["#{attr}"].to_json).to eq(@user.send(attr.to_sym).to_json)
+          expect(data["#{attr}"].to_json).to eq(user.send(attr.to_sym).to_json)
         end
       end
 
@@ -206,29 +196,9 @@ describe 'Users API' do
       end
     end
 
-    # context 'when user exist' do
-    #   before do
-    #     User.create(email:'test_user@holapi.com', password: '123456789', name: 'Super user')
-    #     get '/api/v1/users/1'
-    #   end
-    #
-    #   it 'respond with 200 ok' do
-    #     expect(last_response).to be_ok
-    #   end
-    #
-    #   it 'respond with right object' do
-    #     data = JSON::parse(last_response.body)
-    #     expect(data['email']).to eq('test_user@holapi.com')
-    #     expect(data['name']).to eq('Super user')
-    #   end
-    # end
-
     context 'when user do not exist' do
-      before do
-        get '/api/v1/users/999'
-      end
-
       it 'respond with 404' do
+        get '/api/v1/users/999'
         expect(last_response.status).to eq 404
       end
     end
@@ -245,43 +215,33 @@ describe 'Users API' do
   end
 
   describe 'PUT /users/:id' do
+    let!(:user) { create :user }
+
     context 'with valid data' do
-      before do
-        User.create(email:'test_user@holapi.com', password: '123456789')
+      it 'change user in database' do
         put '/api/v1/users/1',
           { email: "super_user@holapi.com", password: "123456789" }.to_json,
           { 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json' }
-      end
 
-      it 'respond with 202' do
         expect(last_response.status).to eq 202
-      end
-
-      it 'change user in database' do
         expect(User.find_by_id(1).email).to eq 'super_user@holapi.com'
       end
     end
 
     context 'with not valid data' do
-      before do
-        User.create(email:'test_user2@holapi.com', password: '123456789')
+      it 'not change user in databse' do
         put '/api/v1/users/1',
           { email: "super_user@holapi.com", password: '1' }.to_json,
           { 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json' }
-      end
 
-      it 'respond with 400' do
         expect(last_response.status).to eq 400
-      end
-
-      it 'not change user in databse' do
-        expect(User.find_by_id(1).email).to eq 'test_user2@holapi.com'
+        expect(User.find_by_id(1).email).to eq user.email
       end
     end
 
     context 'if user does not exist' do
       it 'respond with 404' do
-        put '/api/v1/users/1',
+        put '/api/v1/users/999',
           { email: "123", password: '456' }.to_json,
           { 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json' }
         expect(last_response.status).to eq 404
@@ -290,11 +250,9 @@ describe 'Users API' do
   end
 
   describe 'DELETE /users/:id' do
-    context 'when user exist' do
-      before do
-        User.create(email:'test_user@holapi.com', password: '123456789')
-      end
+    let!(:user) { create :user }
 
+    context 'when user exist' do
       it 'delete user form database' do
         expect { delete '/api/v1/users/1' }.to change(User, :count).by(-1)
       end
@@ -307,7 +265,7 @@ describe 'Users API' do
 
     context 'when user does not exist' do
       it 'respond with 404' do
-        delete '/api/v1/users/1'
+        delete '/api/v1/users/999'
         expect(last_response.status).to eq 404
       end
     end
