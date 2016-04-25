@@ -1,9 +1,9 @@
 require File.expand_path '../../../spec_helper.rb', __FILE__
 
 describe 'Tasks API' do
-  describe 'GET /tasks' do
-    let!(:user) { create(:user) }
+  let!(:user) { create(:user) }
 
+  describe 'GET /tasks' do
     context 'when have tasks' do
       let!(:task) { create(:task, user: user) }
 
@@ -148,78 +148,58 @@ describe 'Tasks API' do
   end
 
   describe 'DELETE /tasks' do
-    before do
-      Task.create(name:'Task 1', description: 'description')
-      Task.create(name:'Task 2', description: 'description')
+    let!(:task) { create_list(:task, 2, user: user) }
+
+    it 'respond with 202 and degrees tasks count' do
       delete '/api/v1/tasks'
-    end
-
-    it 'respond with 202' do
       expect(last_response.status).to eq 202
-    end
-
-    it 'delete all tasks' do
       expect(Task.count).to eq 0
     end
   end
 
   describe 'GET /tasks/:id' do
     context 'when task exist' do
-      before do
-        Task.create(name:'Super task', description: 'Super description')
-        get '/api/v1/tasks/1'
-      end
-
-      it 'respond with 200 ok' do
-        expect(last_response).to be_ok
-      end
+      let!(:task) { create(:task, user: user) }
 
       it 'respond with right object' do
+        get '/api/v1/tasks/1'
+
+        expect(last_response).to be_ok
+
         data = JSON::parse(last_response.body)
-        expect(data['name']).to eq('Super task')
-        expect(data['description']).to eq('Super description')
+        expect(data['name']).to eq(task.name)
+        expect(data['description']).to eq(task.description)
       end
     end
 
     context 'when task do not exist' do
-      before do
-        get '/api/v1/tasks/999'
-      end
-
       it 'respond with 404' do
+        get '/api/v1/tasks/999'
         expect(last_response.status).to eq 404
       end
     end
   end
 
   describe 'POST /tasks/:id' do
-    before do
-      Task.create(name:'Super task', description: 'Super description')
-      post '/api/v1/tasks/1'
-    end
+    let!(:task) { create(:task, user: user) }
 
     it 'respond with 405' do
+      post '/api/v1/tasks/1'
       expect(last_response.status).to eq 405
     end
   end
 
   describe 'PUT /tasks/:id' do
+    let!(:task) { create :task, user: user }
+
     context 'with valid data' do
-      before do
-        Task.create(
-          name:'Task for changes',
-          description: 'Description for changes'
-        )
+      it 'return new task' do
         put '/api/v1/tasks/1',
           { name: "New name for task", description: 'New description' }.to_json,
           { 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json' }
-      end
 
-      it 'respond with 202' do
         expect(last_response.status).to eq 202
-      end
 
-      it 'return new task' do
         data = JSON::parse(last_response.body)
         expect(data['name']).to eq('New name for task')
         expect(data['description']).to eq('New description')
@@ -228,10 +208,6 @@ describe 'Tasks API' do
 
     context 'with not valid data' do
       it 'respond with 400' do
-        Task.create(
-          name:'Task for changes',
-          description: 'Description for changes'
-        )
         put '/api/v1/tasks/1',
           { name: "123", description: '456' }.to_json,
           { 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json' }
@@ -241,7 +217,7 @@ describe 'Tasks API' do
 
     context 'if task does not exist' do
       it 'respond with 404' do
-        put '/api/v1/tasks/1',
+        put '/api/v1/tasks/999',
           { name: "123", description: '456' }.to_json,
           { 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json' }
         expect(last_response.status).to eq 404
@@ -251,12 +227,7 @@ describe 'Tasks API' do
 
   describe 'DELETE /tasks/:id' do
     context 'when task exist' do
-      before do
-        Task.create(
-          name:'Task for deleting',
-          description: 'Description for task deleting'
-        )
-      end
+      let!(:task) { create :task, user: user }
 
       it 'delete task form database' do
         expect { do_request }.to change(Task, :count).by(-1)
