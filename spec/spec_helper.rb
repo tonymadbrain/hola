@@ -39,9 +39,6 @@ RSpec.configure do |config|
   end
 end
 
-# FactoryGirl.definition_file_paths = %w{./factories ./test/factories ./spec/factories}
-# FactoryGirl.find_definitions
-
 def app
   Sinatra::Application
 end
