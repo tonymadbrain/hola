@@ -73,7 +73,8 @@ namespace '/api/v1' do
   end
   post '/tasks' do
     params = JSON.parse(request.body.read).symbolize_keys
-    @task = Task.new(params)
+    user = User.find(params[:user])
+    @task = user.tasks.new(params.except(:user))
     if @task.save
       status 201
       json @task
@@ -116,7 +117,6 @@ namespace '/api/v1' do
     status 404
   end
   get '/tasks/:id' do
-    # params = JSON.parse(request.env["rack.input"].read)
     if @task = Task.find_by_id(params[:id])
       json @task
     else
