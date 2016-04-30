@@ -102,6 +102,11 @@ describe 'Tasks API' do
         expect(Task.first.name).to eq('New task 2')
       end
 
+      it 'assign user to new task' do
+        do_request "New task"
+        expect(Task.first.user_id).to eq(user.id)
+      end
+
       it 'respond with 201' do
         do_request "New task"
         expect(last_response.status).to eq 201
@@ -133,7 +138,7 @@ describe 'Tasks API' do
 
     def do_request(name)
       post '/api/v1/tasks',
-        { name: name, description: "description" }.to_json,
+        { name: name, description: "description", user: user.id }.to_json,
         { 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json' }
     end
   end
