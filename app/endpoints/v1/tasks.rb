@@ -118,6 +118,7 @@ namespace '/api/v1' do
   end
   get '/tasks/:id' do
     if @task = Task.find_by_id(params[:id])
+      headers['Link'] = "<http://" + request.host + "/api/v1/users/#{@task.user_id}>; rel=\"user\""
       json @task
     else
       json_error("Not found", 404)

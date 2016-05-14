@@ -166,14 +166,19 @@ describe 'Tasks API' do
     context 'when task exist' do
       let!(:task) { create(:task, user: user) }
 
-      it 'respond with right object' do
+      before do
         get '/api/v1/tasks/1'
+      end
 
-        expect(last_response).to be_ok
+      %w(name description user_id created_at updated_at).each do |attr|
+        it "contains #{ attr }" do
+          data = JSON::parse(last_response.body)
+          expect(data["#{attr}"].to_json).to eq(task.send(attr.to_sym).to_json)
+        end
+      end
 
-        data = JSON::parse(last_response.body)
-        expect(data['name']).to eq(task.name)
-        expect(data['description']).to eq(task.description)
+      it 'provide Link header with link to user' do
+        expect(last_response.headers['Link']).to eq("<http://example.org/api/v1/users/#{task.user_id}>; rel=\"user\"")
       end
     end
 
