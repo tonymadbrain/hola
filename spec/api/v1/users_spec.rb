@@ -194,6 +194,10 @@ describe 'Users API' do
           expect(data).to_not have_key("#{attr}")
         end
       end
+
+      it 'provide Link header with link to tasks for user' do
+        expect(last_response.headers['Link']).to eq("<http://example.org/api/v1/users/1/tasks>; rel=\"tasks\"")
+      end
     end
 
     context 'when user do not exist' do

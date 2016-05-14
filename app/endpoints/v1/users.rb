@@ -119,6 +119,7 @@ namespace '/api/v1' do
   end
   get '/users/:id' do
     if @user = User.where(id: "#{params[:id]}").select("id", "email", "name", "created_at", "updated_at").first
+      headers['Link'] = "<http://" + request.host + "/api/v1/users/#{@user.id}/tasks>; rel=\"tasks\""
       json @user
     else
       json_error("Not found", 404)
