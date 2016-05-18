@@ -3,6 +3,8 @@ page do
   title "Hola API docs"
   introduction "REST API for simple taskmanager Hola.
 
+Resources /users, /tasks, /users/:id, /tasks/:id, /users/:id/tasks provide header Link
+
 Meaning of used HTTP status & error codes:
 
 * 200 OK - Success!
