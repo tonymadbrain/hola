@@ -1,12 +1,15 @@
 require File.expand_path '../../../spec_helper.rb', __FILE__
 
 describe 'Users API' do
+  let!(:user) { create :user }
+  let(:user_in_db) { User.find(1) }
+
   describe 'GET /users' do
     context 'when have users' do
       let!(:user) { create :user }
 
       before do
-        get '/api/v1/users'
+        get '/api/v1/users', nil, { 'HTTP_AUTH' => "#{user_in_db.email}:#{user_in_db.password_digest}" }
       end
 
       it 'provide header X-Total-Count' do
@@ -34,7 +37,7 @@ describe 'Users API' do
 
     context 'when have no users' do
       before do
-        get '/api/v1/users'
+        get '/api/v1/users', nil, { 'HTTP_AUTH' => "#{user_in_db.email}:#{user_in_db.password_digest}" }
       end
 
       it 'return 200' do
@@ -51,29 +54,29 @@ describe 'Users API' do
       let!(:users) { create_list(:user, 5) }
 
       it 'provide link header when offset 0' do
-        get '/api/v1/users', limit: 2, offset: 0
+        get '/api/v1/users?offset=0&limit=2', nil, { 'HTTP_AUTH' => "#{user_in_db.email}:#{user_in_db.password_digest}" }
         expect(last_response.headers['Link']).to eq("<http://example.org/api/v1/users?offset=0&limit=2>; rel=\"first\",<http://example.org/api/v1/users?offset=3&limit=2>; rel=\"last\",<http://example.org/api/v1/users?offset=2&limit=2>; rel=\"next\",")
       end
 
       it 'provide link header when offset < limit' do
-        get '/api/v1/users', limit: 2, offset: 1
+        get '/api/v1/users?offset=1&limit=2', nil, { 'HTTP_AUTH' => "#{user_in_db.email}:#{user_in_db.password_digest}" }
         expect(last_response.headers['Link']).to eq("<http://example.org/api/v1/users?offset=0&limit=2>; rel=\"first\",<http://example.org/api/v1/users?offset=3&limit=2>; rel=\"last\",<http://example.org/api/v1/users?offset=3&limit=2>; rel=\"next\",<http://example.org/api/v1/users?offset=0&limit=1>; rel=\"prev\",")
       end
 
       it 'provide link header offset > limit' do
-        get '/api/v1/users', limit: 1, offset: 2
+        get '/api/v1/users?offset=2&limit=1', nil, { 'HTTP_AUTH' => "#{user_in_db.email}:#{user_in_db.password_digest}" }
         expect(last_response.headers['Link']).to eq("<http://example.org/api/v1/users?offset=0&limit=1>; rel=\"first\",<http://example.org/api/v1/users?offset=4&limit=1>; rel=\"last\",<http://example.org/api/v1/users?offset=3&limit=1>; rel=\"next\",<http://example.org/api/v1/users?offset=1&limit=1>; rel=\"prev\",")
       end
 
       it 'return 3 when limit 3 and users count 5' do
-        get '/api/v1/users', limit: 3
+        get '/api/v1/users?limit=3', nil, { 'HTTP_AUTH' => "#{user_in_db.email}:#{user_in_db.password_digest}" }
 
         data = JSON::parse(last_response.body)
         expect(data.size).to eq(3)
       end
 
       it 'return user with id 5 when offset 4 and limit 1' do
-        get '/api/v1/users', limit: 1, offset: 4
+        get '/api/v1/users?offset=4&limit=1', nil, { 'HTTP_AUTH' => "#{user_in_db.email}:#{user_in_db.password_digest}" }
 
         data = JSON::parse(last_response.body)
         expect(data.size).to eq(1)
@@ -81,66 +84,86 @@ describe 'Users API' do
       end
 
       it 'respond with error when limit < 0' do
-        get '/api/v1/users', limit: -5
+        get '/api/v1/users?limit=-5', nil, { 'HTTP_AUTH' => "#{user_in_db.email}:#{user_in_db.password_digest}" }
         expect(last_response.status).to eq 400
       end
 
       it 'respond with error when offset < 0' do
-        get '/api/v1/users', offset: -5
+        get '/api/v1/users?offset=-5', nil, { 'HTTP_AUTH' => "#{user_in_db.email}:#{user_in_db.password_digest}" }
         expect(last_response.status).to eq 400
       end
 
       it 'respond with error when limit > 100' do
-        get '/api/v1/users', limit: 101
+        get '/api/v1/users?limit=101', nil, { 'HTTP_AUTH' => "#{user_in_db.email}:#{user_in_db.password_digest}" }
         expect(last_response.status).to eq 400
       end
     end
 
-    describe 'POST /users' do
-      context 'valid user' do
-        it 'change count of users in database' do
-          expect { do_request "new_user@hola.api" }.to change(User, :count).by(1)
-        end
+    context 'when no AUTH header provided' do
+      let!(:user) { create :user }
 
-        it 'create new user in database' do
-          do_request "new_user_2@hola.api"
-          expect(User.first.email).to eq('new_user_2@hola.api')
-        end
+      it 'respond with 401' do
+        get '/api/v1/users'
 
-        it 'respond with 201' do
-          do_request "new_user@hola.api"
-          expect(last_response.status).to eq 201
-        end
+        expect(last_response.status).to eq 401
+      end
+    end
 
-        it 'return new entity' do
-          do_request "new_user@hola.api"
-          data = JSON::parse(last_response.body)
-          expect(data['email']).to eq('new_user@hola.api')
-        end
+    context 'when bad credentials provided in AUTH header' do
+      let!(:user) { create :user }
+
+      it 'respond with 403' do
+        get '/api/v1/users', nil, { 'HTTP_AUTH' => "123:123" }
+
+        expect(last_response.status).to eq 403
+      end
+    end
+  end
+
+  describe 'POST /users' do
+    context 'valid user' do
+      it 'change count of users in database' do
+        expect { do_request "new_user@hola.api" }.to change(User, :count).by(1)
       end
 
-      context 'invalid task' do
-        it 'not change count of users in database' do
-          expect { do_request "" }.to_not change(User, :count)
-        end
-
-        it 'respond with 400' do
-          do_request ""
-          expect(last_response.status).to eq 400
-        end
-
-        it 'respond with json object error' do
-          do_request ""
-          data = JSON::parse(last_response.body)
-          expect(data).to have_key('error')
-        end
+      it 'create new user in database' do
+        do_request "new_user_2@hola.api"
+        expect(User.first.email).to eq('new_user_2@hola.api')
       end
 
-      def do_request(email)
-        post '/api/v1/users',
-          { email: email, password: "123456" }.to_json,
-          { 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json' }
+      it 'respond with 201' do
+        do_request "new_user@hola.api"
+        expect(last_response.status).to eq 201
       end
+
+      it 'return new entity' do
+        do_request "new_user@hola.api"
+        data = JSON::parse(last_response.body)
+        expect(data['email']).to eq('new_user@hola.api')
+      end
+    end
+
+    context 'invalid task' do
+      it 'not change count of users in database' do
+        expect { do_request "" }.to_not change(User, :count)
+      end
+
+      it 'respond with 400' do
+        do_request ""
+        expect(last_response.status).to eq 400
+      end
+
+      it 'respond with json object error' do
+        do_request ""
+        data = JSON::parse(last_response.body)
+        expect(data).to have_key('error')
+      end
+    end
+
+    def do_request(email)
+      post '/api/v1/users',
+        { email: email, password: "123456" }.to_json,
+        { 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json' }
     end
   end
 
@@ -148,7 +171,7 @@ describe 'Users API' do
     it 'return 405 for now' do
       put '/api/v1/users',
         { email: "new_email@mail.net", password: '123456789' }.to_json,
-        { 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json' }
+        { 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json', 'HTTP_AUTH' => "#{user_in_db.email}:#{user_in_db.password_digest}" }
       expect(last_response.status).to eq 405
     end
   end

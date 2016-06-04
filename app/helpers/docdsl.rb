@@ -3,7 +3,8 @@ page do
   title "Hola API docs"
   introduction "REST API for simple taskmanager Hola.
 
-Resources /users, /tasks, /users/:id, /tasks/:id, /users/:id/tasks provide header Link
+Resources /users, /tasks, /users/:id, /tasks/:id, /users/:id/tasks provide header Link.
+All requests should be over https and contain AUTHORIZATION header except POST on /users for create new user.
 
 Meaning of used HTTP status & error codes:
 

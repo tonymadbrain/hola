@@ -1,4 +1,24 @@
 namespace '/api/v1' do
+  before do
+    if settings.production?
+      return status 405 unless request.secure?
+    end
+
+    # Pull out the authorization header
+    if env["HTTP_AUTH"] && env["HTTP_AUTH"].split(':').length == 2
+      auth_header = env["HTTP_AUTH"].split(':')
+    else
+      halt 401
+    end
+
+    user_email  = auth_header[0]
+    password    = auth_header[1]
+
+    client = User.where(email: user_email, password_digest: password)
+
+    halt 403 if client.empty?
+  end
+
   documentation "Respond with list of existed users" do
     param :limit, "limit of users for response, default is 20, max is 100"
     param :offset, "offset for users, default is 0"
@@ -72,9 +92,6 @@ namespace '/api/v1' do
     status 405
   end
   post '/users' do
-    if settings.production?
-      return status 405 unless request.secure?
-    end
     params = JSON.parse(request.body.read).symbolize_keys
     @user = User.new(params)
     if @user.save
