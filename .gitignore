@@ -15,3 +15,6 @@ config/database.yml
 
 # Mac OS
 .DS_Store
+
+# IDE
+.idea/
